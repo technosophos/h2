@@ -2,6 +2,17 @@
 
 **WARNING:** This is a fork of h2 that provides interoperability with Google's Go implementation of gRPC (specifically, the one used in Kubernetes' Kubelet). To achieve this, we ignore parts of the HTTP/2 spec that h2 implements correctly. Unless you're working in a similar vein, you probably want to use the _real_ h2 library. _end warning_
 
+To use this "in place of" the real _h2_, add this section to your project's `Cargo.toml`:
+
+```
+[patch.crates-io]
+h2 = { git = "https://github.com/technosophos/h2.git" }
+```
+
+The essential issue is that the Go gRPC library [does not appropriately vet](https://github.com/grpc/grpc-go/blob/master/clientconn.go#L261-L270) the `:authority` header, and [some libraries](https://github.com/kubernetes/kubernetes/blob/master/pkg/kubelet/util/util_unix.go#L82-L92) set it to values like `unix:///tmp/my.sock`, which translates to `/tmp/my.sock`. Slashes are illegal inside of the `:authority` header (and a file path doesn't really qualify as an authority section anyway). However, the HTTP/2 spec seems to remain silent about what should be done here. So for now, I have just set it to `localhost` (though there may be a better solution).
+
+---
+
 A Tokio aware, HTTP/2.0 client & server implementation for Rust.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
