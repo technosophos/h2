@@ -4,7 +4,7 @@
 
 To use this "in place of" the real _h2_, add this section to your project's `Cargo.toml`:
 
-```
+```toml
 [patch.crates-io]
 h2 = { git = "https://github.com/technosophos/h2.git" }
 ```
