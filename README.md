@@ -1,5 +1,7 @@
 # H2
 
+**WARNING:** This is a fork of h2 that provides interoperability with Google's Go implementation of gRPC (specifically, the one used in Kubernetes' Kubelet). To achieve this, we ignore parts of the HTTP/2 spec that h2 implements correctly. Unless you're working in a similar vein, you probably want to use the _real_ h2 library. _end warning_
+
 A Tokio aware, HTTP/2.0 client & server implementation for Rust.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)

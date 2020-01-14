@@ -1376,12 +1376,24 @@ impl proto::Peer for Peer {
         // header
         if let Some(authority) = pseudo.authority {
             let maybe_authority = uri::Authority::from_maybe_shared(authority.clone().into_inner());
-            parts.authority = Some(maybe_authority.or_else(|why| {
-                malformed!(
-                    "malformed headers: malformed authority ({:?}): {}",
-                    authority,
-                    why,
-                )
+            parts.authority = Some(maybe_authority.or_else(|_why| {
+                // MPB: This is causing compatibility issues with Go's gRPC
+                // library, which does not always set the authority field
+                // correctly when doing HTTP over UNIX sockets.
+                // For now, fake that it is 'localhost'
+                // malformed!(
+                //     "malformed headers: malformed authority ({:?}): {}",
+                //     authority,
+                //     why,
+                // )
+                log::info!("Treating invalid :authority {:?} as 'localhost'", authority);
+                uri::Authority::from_maybe_shared("localhost").or_else(|reason| {
+                    malformed!(
+                        "malformed headers XXX: malformed authority ({:?}): {}",
+                        authority,
+                        reason,
+                    )
+                })
             })?);
         }
 
